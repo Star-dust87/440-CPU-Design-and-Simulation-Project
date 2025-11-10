@@ -286,14 +286,21 @@ The processor executes each instruction in a single clock cycle. While this is s
 
 ## AI Usage Log
 
+Claude 3.5 Sonnet (Anthropic)
+- Version: Claude Sonnet 4.5
+
 This project was developed with AI assistance for:
 
 1. **Documentation**: AI helped structure the README and design documentation for clarity and completeness.
+
+   Prompt: Help create README.md and design document.md
 
 2. **Debugging**: AI helped identify and fix issues with:
    - Sign extension in immediate values
    - Branch offset calculation
    - Memory addressing in little-endian format
+  
+     Prompt: Review my code
 
 All code was reviewed, tested, and verified by the student. 
 The core algorithm design and implementation decisions were made by the student with AI 
