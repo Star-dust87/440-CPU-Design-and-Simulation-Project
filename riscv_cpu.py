@@ -30,7 +30,6 @@ class ALU:
     
     @staticmethod
     def execute(op: ALUOp, a: int, b: int) -> int:
-        # Convert to 32-bit signed
         a = ALU._to_signed(a)
         b = ALU._to_signed(b)
         
@@ -75,7 +74,7 @@ class ALU:
         return val & 0xFFFFFFFF
 
 class RegisterFile:
-  
+    
     def __init__(self):
         self.regs = [0] * 32
     
@@ -137,7 +136,6 @@ class ControlUnit:
     
     @staticmethod
     def decode(opcode: int) -> Dict[str, bool]:
-
         signals = {
             'reg_write': False,
             'mem_read': False,
@@ -149,39 +147,39 @@ class ControlUnit:
             'jalr': False
         }
         
-        if opcode == OpcodeType.OP.value:  # R-type
+        if opcode == OpcodeType.OP.value:  
             signals['reg_write'] = True
             signals['alu_src'] = False
-        elif opcode == OpcodeType.OP_IMM.value:  # I-type arithmetic
+        elif opcode == OpcodeType.OP_IMM.value:  
             signals['reg_write'] = True
             signals['alu_src'] = True
-        elif opcode == OpcodeType.LOAD.value:  # Load
+        elif opcode == OpcodeType.LOAD.value:  
             signals['reg_write'] = True
             signals['mem_read'] = True
             signals['mem_to_reg'] = True
             signals['alu_src'] = True
-        elif opcode == OpcodeType.STORE.value:  # Store
+        elif opcode == OpcodeType.STORE.value:  
             signals['mem_write'] = True
             signals['alu_src'] = True
-        elif opcode == OpcodeType.BRANCH.value:  # Branch
+        elif opcode == OpcodeType.BRANCH.value:  
             signals['branch'] = True
-        elif opcode == OpcodeType.JAL.value:  # JAL
+        elif opcode == OpcodeType.JAL.value:  
             signals['reg_write'] = True
             signals['jump'] = True
-        elif opcode == OpcodeType.JALR.value:  # JALR
+        elif opcode == OpcodeType.JALR.value:  
             signals['reg_write'] = True
             signals['jump'] = True
             signals['jalr'] = True
             signals['alu_src'] = True
-        elif opcode == OpcodeType.LUI.value:  # LUI
+        elif opcode == OpcodeType.LUI.value:  
             signals['reg_write'] = True
-        elif opcode == OpcodeType.AUIPC.value:  # AUIPC
+        elif opcode == OpcodeType.AUIPC.value:  
             signals['reg_write'] = True
         
         return signals
 
 class InstructionDecoder:
-    
+  
     @staticmethod
     def decode(instr: int) -> Dict:
         opcode = instr & 0x7F
@@ -301,7 +299,7 @@ class RISCVCPU:
         elif opcode == OpcodeType.AUIPC.value:  # AUIPC
             write_data = self.pc + decoded['imm_u']
         
-  
+        
         if ctrl['reg_write']:
             self.regs.write(decoded['rd'], write_data)
             if self.debug:
@@ -312,21 +310,21 @@ class RISCVCPU:
         self.instruction_count += 1
     
     def _get_alu_op(self, funct3: int, funct7: int) -> ALUOp:
-        if funct3 == 0x0:  
+        if funct3 == 0x0:  # ADD/SUB
             return ALUOp.SUB if (funct7 & 0x20) else ALUOp.ADD
-        elif funct3 == 0x1:  
+        elif funct3 == 0x1:  # SLL
             return ALUOp.SLL
-        elif funct3 == 0x2:  
+        elif funct3 == 0x2:  # SLT
             return ALUOp.SLT
-        elif funct3 == 0x3:  
+        elif funct3 == 0x3:  # SLTU
             return ALUOp.SLTU
-        elif funct3 == 0x4:  
+        elif funct3 == 0x4:  # XOR
             return ALUOp.XOR
-        elif funct3 == 0x5:  
+        elif funct3 == 0x5:  # SRL/SRA
             return ALUOp.SRA if (funct7 & 0x20) else ALUOp.SRL
-        elif funct3 == 0x6:  
+        elif funct3 == 0x6:  # OR
             return ALUOp.OR
-        elif funct3 == 0x7:  
+        elif funct3 == 0x7:  # AND
             return ALUOp.AND
         return ALUOp.ADD
     
@@ -393,7 +391,7 @@ def main():
     cpu.run(max_cycles=10000)
     
     cpu.dump_state()
-
+    
     cpu.dump_memory(0x00010000, 16)
 
 if __name__ == '__main__':
