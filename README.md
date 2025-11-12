@@ -184,10 +184,10 @@ Options:
 
 ```bash
 # Run the test program
-python3 riscv_cpu.py prog.hex
+python3 riscv_cpu.py test_base.hex
 
 # Run with debug output
-python3 riscv_cpu.py prog.hex --debug
+python3 riscv_cpu.py test_base.hex --debug
 ```
 
 ### Program Format
