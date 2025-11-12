@@ -1,4 +1,3 @@
-#### Attachment: test_base.s
 asm
 .section .text
 .globl _start
@@ -14,4 +13,5 @@ beq x3, x4, label1 # branch forward by 8 bytes
 addi x6, x0, 1 # skipped if branch taken
 label1:
 addi x6, x0, 2 # x6 = 2
+
 jal x0, 0 # halt: infinite loop
