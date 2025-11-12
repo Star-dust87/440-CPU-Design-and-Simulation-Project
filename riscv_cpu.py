@@ -27,7 +27,7 @@ class ALUOp(Enum):
     AND = 9
 
 class ALU:
-    
+   
     @staticmethod
     def execute(op: ALUOp, a: int, b: int) -> int:
         a = ALU._to_signed(a)
@@ -100,7 +100,7 @@ class RegisterFile:
 
 class Memory:
     
-    def __init__(self, size: int = 0x20000):  # 128KB
+    def __init__(self, size: int = 0x20000):  
         self.size = size
         self.mem = bytearray(size)
     
@@ -123,6 +123,7 @@ class Memory:
             self.mem[addr+3] = (value >> 24) & 0xFF
     
     def load_program(self, hex_file: str):
+        
         with open(hex_file, 'r') as f:
             addr = 0
             for line in f:
@@ -179,7 +180,7 @@ class ControlUnit:
         return signals
 
 class InstructionDecoder:
-  
+    
     @staticmethod
     def decode(instr: int) -> Dict:
         opcode = instr & 0x7F
@@ -264,41 +265,40 @@ class RISCVCPU:
             print(f"\n[Cycle {self.cycle_count}] PC=0x{self.pc:08x} Instr=0x{instr_word:08x}")
             print(f"  Opcode=0x{opcode:02x} rd=x{decoded['rd']} rs1=x{decoded['rs1']} rs2=x{decoded['rs2']}")
         
-        if opcode == OpcodeType.OP.value:  # R-type
+        if opcode == OpcodeType.OP.value:  
             alu_op = self._get_alu_op(decoded['funct3'], decoded['funct7'])
             write_data = ALU.execute(alu_op, rs1_data, rs2_data)
             
-        elif opcode == OpcodeType.OP_IMM.value:  # I-type arithmetic
+        elif opcode == OpcodeType.OP_IMM.value:  
             alu_op = self._get_alu_op(decoded['funct3'], decoded['funct7'] if decoded['funct3'] == 0x5 else 0)
             write_data = ALU.execute(alu_op, rs1_data, decoded['imm_i'])
             
-        elif opcode == OpcodeType.LOAD.value:  # Load
+        elif opcode == OpcodeType.LOAD.value:  
             addr = ALU.execute(ALUOp.ADD, rs1_data, decoded['imm_i'])
             write_data = self.memory.read_word(addr)
             
-        elif opcode == OpcodeType.STORE.value:  # Store
+        elif opcode == OpcodeType.STORE.value: 
             addr = ALU.execute(ALUOp.ADD, rs1_data, decoded['imm_s'])
             self.memory.write_word(addr, rs2_data)
             
-        elif opcode == OpcodeType.BRANCH.value:  # Branch
+        elif opcode == OpcodeType.BRANCH.value:  
             taken = self._evaluate_branch(decoded['funct3'], rs1_data, rs2_data)
             if taken:
                 next_pc = self.pc + decoded['imm_b']
             
-        elif opcode == OpcodeType.JAL.value:  # JAL
+        elif opcode == OpcodeType.JAL.value:  
             write_data = self.pc + 4
             next_pc = self.pc + decoded['imm_j']
             
-        elif opcode == OpcodeType.JALR.value:  # JALR
+        elif opcode == OpcodeType.JALR.value:  
             write_data = self.pc + 4
             next_pc = (rs1_data + decoded['imm_i']) & 0xFFFFFFFE
             
-        elif opcode == OpcodeType.LUI.value:  # LUI
+        elif opcode == OpcodeType.LUI.value:  
             write_data = decoded['imm_u']
             
-        elif opcode == OpcodeType.AUIPC.value:  # AUIPC
+        elif opcode == OpcodeType.AUIPC.value:  
             write_data = self.pc + decoded['imm_u']
-        
         
         if ctrl['reg_write']:
             self.regs.write(decoded['rd'], write_data)
@@ -310,21 +310,21 @@ class RISCVCPU:
         self.instruction_count += 1
     
     def _get_alu_op(self, funct3: int, funct7: int) -> ALUOp:
-        if funct3 == 0x0:  # ADD/SUB
+        if funct3 == 0x0:  
             return ALUOp.SUB if (funct7 & 0x20) else ALUOp.ADD
-        elif funct3 == 0x1:  # SLL
+        elif funct3 == 0x1:  
             return ALUOp.SLL
-        elif funct3 == 0x2:  # SLT
+        elif funct3 == 0x2:  
             return ALUOp.SLT
-        elif funct3 == 0x3:  # SLTU
+        elif funct3 == 0x3:  
             return ALUOp.SLTU
-        elif funct3 == 0x4:  # XOR
+        elif funct3 == 0x4:  
             return ALUOp.XOR
-        elif funct3 == 0x5:  # SRL/SRA
+        elif funct3 == 0x5:  
             return ALUOp.SRA if (funct7 & 0x20) else ALUOp.SRL
-        elif funct3 == 0x6:  # OR
+        elif funct3 == 0x6:  
             return ALUOp.OR
-        elif funct3 == 0x7:  # AND
+        elif funct3 == 0x7:  
             return ALUOp.AND
         return ALUOp.ADD
     
