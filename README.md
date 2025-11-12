@@ -302,6 +302,11 @@ This project was developed with AI assistance for:
   
      Prompt: Review my code
 
+3. **Standard Program File**: AI helped prog.hex
+   -Binary machine code
+
+   Prompt: Create prog.hex
+
 All code was reviewed, tested, and verified by the student. 
 The core algorithm design and implementation decisions were made by the student with AI 
 providing suggestions and catching potential errors.
