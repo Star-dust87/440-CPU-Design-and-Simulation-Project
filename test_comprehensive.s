@@ -1,6 +1,3 @@
-# Test Program 2: Comprehensive ISA Test
-# Tests logical operations, shifts, and more branches
-
 .section .text
 .globl _start
 _start:
