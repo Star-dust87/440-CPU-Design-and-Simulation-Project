@@ -1,0 +1,101 @@
+def load_hex_file(filename: str) -> list:
+   
+    instructions = []
+    
+    try:
+        with open(filename, 'r') as f:
+            line_number = 0
+            for line in f:
+                line_number += 1
+                # Strip whitespace
+                line = line.strip()
+                
+                if not line or line.startswith('#'):
+                    continue
+                
+                if len(line) != 8:
+                    raise ValueError(
+                        f"Line {line_number}: Expected 8 hex digits, got {len(line)} ({line})"
+                    )
+                
+                try:
+                    instruction = int(line, 16)
+                except ValueError:
+                    raise ValueError(
+                        f"Line {line_number}: Invalid hexadecimal format ({line})"
+                    )
+                
+                if instruction > 0xFFFFFFFF:
+                    raise ValueError(
+                        f"Line {line_number}: Value exceeds 32 bits ({line})"
+                    )
+                
+                instructions.append(instruction)
+                
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Could not find file: {filename}")
+    
+    return instructions
+
+
+def load_hex_into_memory(filename: str, memory: bytearray, start_addr: int = 0) -> int:
+    
+    instructions = load_hex_file(filename)
+    
+    addr = start_addr
+    for instruction in instructions:
+        # Check memory bounds
+        if addr + 3 >= len(memory):
+            raise MemoryError(
+                f"Instruction at address 0x{addr:08x} exceeds memory size"
+            )
+        
+        memory[addr] = instruction & 0xFF
+        memory[addr + 1] = (instruction >> 8) & 0xFF
+        memory[addr + 2] = (instruction >> 16) & 0xFF
+        memory[addr + 3] = (instruction >> 24) & 0xFF
+        
+        addr += 4
+    
+    return len(instructions)
+
+
+def validate_hex_file(filename: str) -> tuple:
+    try:
+        instructions = load_hex_file(filename)
+        return (True, "Valid hex file", len(instructions))
+    except Exception as e:
+        return (False, str(e), 0)
+
+
+if __name__ == '__main__':
+   
+    import sys
+    
+    if len(sys.argv) < 2:
+        print("Usage: python hex_loader.py <program.hex>")
+        print("\nThis will validate and display the contents of the hex file.")
+        sys.exit(1)
+    
+    filename = sys.argv[1]
+    
+    valid, message, count = validate_hex_file(filename)
+    
+    if not valid:
+        print(f"Error: {message}")
+        sys.exit(1)
+    
+    print(f"✓ Valid hex file: {filename}")
+    print(f"✓ Instructions found: {count}")
+    print()
+    
+    instructions = load_hex_file(filename)
+    
+    print("Loaded Instructions:")
+    print("-" * 50)
+    for i, instr in enumerate(instructions):
+        addr = i * 4
+        print(f"0x{addr:08x}: 0x{instr:08x}")
+    
+    print("-" * 50)
+    print(f"Total: {count} instructions ({count * 4} bytes)")
