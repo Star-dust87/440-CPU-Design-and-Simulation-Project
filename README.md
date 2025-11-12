@@ -173,21 +173,21 @@ The single-cycle datapath executes each instruction in one clock cycle through f
 ### Running a Program
 
 ```bash
-python3 riscv_cpu.py <program.hex> [--debug]
+python3 riscv_cpu.py <prog.hex> [--debug]
 ```
 
 Options:
-- `<program.hex>`: Path to the hex file containing the program
+- `<prog.hex>`: Path to the hex file containing the program
 - `--debug`: Enable debug output (shows each instruction execution)
 
 ### Example
 
 ```bash
 # Run the test program
-python3 riscv_cpu.py test_base.hex
+python3 riscv_cpu.py prog.hex
 
 # Run with debug output
-python3 riscv_cpu.py test_base.hex --debug
+python3 riscv_cpu.py prog.hex --debug
 ```
 
 ### Program Format
@@ -208,7 +208,7 @@ Example:
 
 ## Test Results
 
-### Test Program: test_base.hex
+### Test Program: prog.hex
 
 **Description:** Basic functionality test covering arithmetic, memory operations, branching, and control flow.
 
@@ -227,7 +227,7 @@ Example:
 
 **Output:**
 ```
-Program loaded from test_base.hex
+Program loaded from prog.hex
 
 === Starting CPU Execution ===
 
@@ -257,6 +257,7 @@ Memory Dump [0x00010000 - 0x0001000f]:
 ```
 .
 ├── riscv_cpu.py           # Main CPU implementation
+├── riscv_cpu_pipelined.py # Pipeline implementation
 ├── test_base.hex          # Provided test program
 ├── test_base.s            # Assembly source for test program
 ├── test_comprehensive.s   # Extended test program
@@ -302,7 +303,7 @@ This project was developed with AI assistance for:
   
      Prompt: Review my code
 
-3. **Standard Program File**: AI helped prog.hex
+3. **Standard Program File**: AI helped create prog.hex
    -Binary machine code
 
    Prompt: Create prog.hex
