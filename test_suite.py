@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-RISC-V CPU Test Suite
-Comprehensive testing and verification for the RISC-V CPU simulator
-"""
-
 import sys
 import subprocess
 from pathlib import Path
@@ -14,13 +8,11 @@ class TestSuite:
         self.tests_failed = 0
         
     def run_test(self, test_name, hex_file, expected_results):
-        """Run a single test and verify results"""
         print(f"\n{'='*60}")
         print(f"Running Test: {test_name}")
         print(f"{'='*60}")
         
         try:
-            # Run the CPU simulator
             result = subprocess.run(
                 ['python3', 'riscv_cpu.py', hex_file],
                 capture_output=True,
@@ -30,12 +22,10 @@ class TestSuite:
             
             output = result.stdout
             
-            # Verify expected results
             all_passed = True
             for key, expected_value in expected_results.items():
-                if key.startswith('x'):  # Register check
-                    # Extract register value from output (handle space in format "x 1=")
-                    reg_num = key[1:]  # Get number after 'x'
+                if key.startswith('x'):  
+                    reg_num = key[1:]  
                     reg_pattern_lower = f"x {reg_num}=0x{expected_value:08x}"
                     reg_pattern_upper = f"x {reg_num}=0x{expected_value:08X}"
                     if reg_pattern_lower in output or reg_pattern_upper in output:
@@ -49,7 +39,7 @@ class TestSuite:
                     else:
                         print(f"✗ Cycles expected {expected_value}")
                         all_passed = False
-                elif key.startswith('mem'):  # Memory check
+                elif key.startswith('mem'):  
                     addr = int(key[3:], 16)
                     mem_pattern = f"0x{addr:08x}: 0x{expected_value:08x}"
                     if mem_pattern in output:
@@ -73,7 +63,6 @@ class TestSuite:
             self.tests_failed += 1
     
     def print_summary(self):
-        """Print test summary"""
         total = self.tests_passed + self.tests_failed
         print(f"\n{'='*60}")
         print(f"TEST SUMMARY")
@@ -84,13 +73,12 @@ class TestSuite:
         print(f"{'='*60}\n")
 
 def main():
-    """Main test runner"""
+    
     suite = TestSuite()
     
     print("RISC-V CPU Test Suite")
     print("="*60)
-    
-    # Test 1: Basic functionality (provided test)
+   
     suite.run_test(
         "Basic Functionality",
         "test_base.hex",
@@ -106,10 +94,8 @@ def main():
         }
     )
     
-    # Print summary
     suite.print_summary()
     
-    # Return exit code based on results
     return 0 if suite.tests_failed == 0 else 1
 
 if __name__ == '__main__':
